@@ -1,3 +1,6 @@
+
+
+
 let projects = [
     { id: 2, name: "Mi proyecto potato 2", img: "/assets/images/shop.svg" }, //0
     { id: 1, name: "Mi proyecto carrot 1", img: "/assets/images/shop.svg" }, //1

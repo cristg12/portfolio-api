@@ -1,5 +1,5 @@
 import express from "express";
-import projectsRouter from "./routes/projects.routes";
+import projectsRouter from "./routes/projects.routes.js";
 
 const app = express();
 
@@ -7,7 +7,8 @@ const app = express();
 app.use(express.json());
 
 // añade las rutas de projects.js
+app.use("/", express.static("public"));
 app.use("/projects", projectsRouter);
 
-// Empezar a escuchar el puerto 3000
+// Empezar a escuchar en el puerto 3000
 app.listen(3000, () => console.log("Servidor listo en http://localhost:3000"));
