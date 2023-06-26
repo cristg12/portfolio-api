@@ -1,3 +1,3 @@
-##Portafolio API
+## Portfolio API
 
-Este es un proyecto para administrar mi portafolio.
+Este es un proyecto para administrar mi portafolio

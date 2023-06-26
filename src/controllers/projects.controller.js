@@ -1,37 +1,48 @@
-
-
+import repository from "../repositories/projects.repository.js";
 
 let projects = [
-    { id: 2, name: "Mi proyecto potato 2", img: "/assets/images/shop.svg" }, //0
-    { id: 1, name: "Mi proyecto carrot 1", img: "/assets/images/shop.svg" }, //1
-    { id: 3, name: "Mi proyecto potato 3", img: "/assets/images/shop.svg" }, //2
-    { id: 4, name: "Mi proyecto carrot 4", img: "/assets/images/shop.svg" }, //3
-  ];
+  { id: 2, name: "Mi proyecto potato 2", img: "/assets/images/shop.svg" }, //0
+  { id: 1, name: "Mi proyecto carrot 1", img: "/assets/images/shop.svg" }, //1
+  { id: 3, name: "Mi proyecto potato 3", img: "/assets/images/shop.svg" }, //2
+  { id: 4, name: "Mi proyecto carrot 4", img: "/assets/images/shop.svg" }, //3
+];
 
-export function all(req, res){
-    const query= req.query;//{search: "potato"}
+export async function all(req, res) {
+  const query = req.query;
+  const dbprojects = await repository.all();
 
-    // Extraer search
-    const search= query.search.toLowerCase();
+  // Añadir validacion de search!
+  if (!query.search) {
+    res.send(dbprojects);
+    return;
+  }
 
-    // filtrar proyectos
-    const result= projects.filter((p)=>{
-        const name= p.name.toLowerCase();
-        return name.match(search);
-    });
+  // Extraer search
+  const search = query.search.toLowerCase();
+
+  // Filtrar projects
+  const result = projects.filter((p) => {
+    const name = p.name.toLowerCase();
+    return name.match(search);
+  });
 
   res.send(result);
 }
 
-export function create(req, res){
-const project = req.body;
-  projects.push(project);
-  res.send("ok!");
+export async function create(req, res) {
+  const project = req.body;
+  const result = await repository.create(project);
+
+  if (result.acknowledged) {
+    res.status(201).send("Proyecto creado con exito!");
+  } else {
+    res.status(500).send("Error al crear el proyecto");
+  }
 }
 
-export function one(req, res){
-    const id = req.params.id;
-  const project = projects.find((p) => p.id == id);
+export async function one(req, res) {
+  const id = req.params.id;
+  const project = await repository.one(id);
 
   if (!project) {
     res.status(404);
@@ -39,40 +50,26 @@ export function one(req, res){
   res.send(project);
 }
 
-export function destroy(req, res){
-    // obtener parametro :id
+export async function remove(req, res) {
   const id = req.params.id;
-  // obtener indice de proyecto
-  const index = projects.findIndex((p) => p.id == id);
-  // validar si existe el Indice
-  if (index == -1) {
-    res.status(404);
-    res.send("Not Found!");
+  const result = await repository.remove(id);
+
+  if (result.acknowledged) {
+    res.status(202).send("Proyecto eliminado con exito!");
+  } else {
+    res.status(500).send("Imposible eliminar proyecto!");
   }
-
-  // eliminar con splice
-  projects.splice(index, 1);
-
-  // responder "ok!"
-  res.send("ok!");
 }
 
-export function update(req, res){
-    // extraer el id
+export async function update(req, res) {
   const id = req.params.id;
-  // buscar proyecto
-  const project = projects.find((p) => p.id == id);
-  // validar si se encontro el proyecto
-  if (!project) {
-    res.status(404);
-    res.send("Proyecto no encontrado!");
-  }
-
-  // actualizar obj proyecto con el body
   const body = req.body;
-  project.name = body.name;
-
-  res.send("ok!");
+  const result = await repository.update(id, body);
+  if (result.acknowledged) {
+    res.status(202).send("Proyecto actualizado con exito");
+  } else {
+    res.status(500).send("Proyecto no actualizado!");
+  }
 }
 
-export default {all, create, one, destroy, update}
+export default { all, create, one, remove, update };

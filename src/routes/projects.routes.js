@@ -1,23 +1,14 @@
-import {Router} from "express";
-import controller from "../controllers/projects.controller.js"
+import { Router } from "express";
+import controller from "../controllers/projects.controller.js";
+import authenticate from "../middlewares/auth.middleware.js";
 
+const router = Router();
 
-  const router= Router();
+router.get("/", controller.all);
+router.get("/:id", controller.one);
 
-//   GET Lista de proyetos
-  router.get("/", controller.all);
-
-
-// POST de crear un proyecto
-  router.post("/", controller.create) 
-
-// GET un proyecto
-  app.get("/:id", controller.one);
-
-// elimina elemento
-  app.delete("/:id", controller.destroy);
-
-// actualizar
-  app.put("/:id", controller.update)
+router.post("/", authenticate, controller.create);
+router.delete("/:id", authenticate, controller.remove);
+router.put("/:id", authenticate, controller.update);
 
 export default router;
